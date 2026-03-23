@@ -10,29 +10,40 @@ import (
 	"time"
 
 	"device_check_mqtt/internal/config"
+	"device_check_mqtt/internal/loader"
+	"device_check_mqtt/internal/router"
+	"device_check_mqtt/internal/service"
+	"device_check_mqtt/internal/store"
 )
 
 func main() {
+	// Load up any all config
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("Failed to load config", "error", err)
 		os.Exit(1)
 	}
 
+	inMemoryStore := store.NewInMemoryStore()
+
+	// NOTE: Remove loading devices on server statup in actual production. Instead create a seed script if devices need to be added.
+	count, err := loader.LoadDevicesFromCSV(cfg.DevicesCSVFilepath, inMemoryStore)
+	if err != nil {
+		slog.Error("Failed to load devices", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("Devices loaded", "count", count)
+
+	service := service.NewDeviceService(inMemoryStore)
+	handler := router.NewRouter(service)
+
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
-		Handler:      http.DefaultServeMux,
+		Handler:      handler,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
-
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok"}`))
-	})
-	server.Handler = mux
 
 	// Run a goroutine to start the server
 	go func() {

@@ -20,7 +20,7 @@ type Config struct {
 func Load() (*Config, error) {
 	cfg := &Config{}
 
-	flag.StringVar(&cfg.Port, "port", "8080", "Server port")
+	flag.StringVar(&cfg.Port, "port", "6733", "Server port")
 	flag.StringVar(&cfg.DevicesCSVFilepath, "devices_path", "data/devices.csv", "Path to devices CSV file")
 	flag.Parse()
 
