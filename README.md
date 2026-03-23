@@ -176,7 +176,9 @@ If READ frequency is really high, a cache can be implemented so that the longer 
 
 ### Logging server
 
-Instead of the devices calling the GET endpoint of the device monitor server, I would imagine it would be a separate server/device that calls those endpoints to aggregate the stats and send them off to the cloud or some other service for logging and data storage (e.g. average stats in the month of January). This could also help health check the device monitor server if needed.
+Instead of the devices calling the GET endpoint of the device monitor server, I would imagine it would be a separate server/device that calls those endpoints to aggregate the stats and send them off to the cloud or some other service for logging and data storage (e.g. average stats in the month of January). A message queue could be implemented to handle the logging output to the cloud, which can ensure that data is persisted if the connection is broken between the cloud and the server. This could either be handled by something like Kafka, or for an MQTT solution, some MQTT broker like Mosquitto with QoS 1 messages. Messages from these services once they reach the cloud will then be handled accordingly.
+
+This could also help health check the device monitor server if needed.
 
 ## AI use
 
