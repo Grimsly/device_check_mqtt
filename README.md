@@ -40,6 +40,8 @@ To run the server without building:
 go run ./cmd/server
 ```
 
+Then run the device simulator which would output the `results.txt` file in the same directory as your simulator executable.
+
 ## Run the compiled binary
 
 1. Compile to executable binary.
@@ -65,6 +67,8 @@ go run ./cmd/server
     ```bash
     ./bin/device_check_mqtt
     ```
+
+3. Run the device simulator which would output the `results.txt` file in the same directory as your simulator executable.
 
 ## Results
 
