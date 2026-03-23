@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"device_check_mqtt/internal/handler"
+	"device_check_mqtt/internal/middleware"
 	"device_check_mqtt/internal/service"
 )
 
@@ -25,6 +26,8 @@ func NewRouter(service *service.DeviceStorageService) http.Handler {
 	})
 
 	var h http.Handler = mux
+
+	h = middleware.RequestLogging(h)
 
 	return h
 }
