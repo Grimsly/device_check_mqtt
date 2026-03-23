@@ -34,6 +34,7 @@ func main() {
 	}
 	slog.Info("Devices loaded", "count", count)
 
+	// Inject in-memory storage to the device service
 	service := service.NewDeviceService(inMemoryStore)
 	handler := router.NewRouter(service)
 

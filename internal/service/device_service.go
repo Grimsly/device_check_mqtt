@@ -17,7 +17,7 @@ var (
 	ErrHeartbeatFirstLastError = errors.New("Device's first heartbeat is later than the last heartbeat")
 )
 
-// Initialize a device service
+// Initialize a device service with an injected DeviceStorageStore
 func NewDeviceService(s store.DeviceStorageStore) *DeviceStorageService {
 	return &DeviceStorageService{store: s}
 }
