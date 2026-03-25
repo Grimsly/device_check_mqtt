@@ -180,6 +180,8 @@ Instead of the devices calling the GET endpoint of the device monitor server, I 
 
 This could also help health check the device monitor server if needed.
 
+There are a couple of things to consider regarding the frequency this server makes its requests. Considering SafelyYou's critical mission is ensuring that any sort of situations are reported as soon as possible, I would imagine that it could work something like this, where every hour or so, the logging server will request for all stats to be sent to the cloud for recording purposes, but every minute, requests will be made to device monitor server to check on its stats and if it deviates from the set standard (e.g. uptime is down from 3 9s to 2 9s), then the logging server sends an alert both locally to an alert system and to the cloud for SafelyYou's staff.
+
 ## AI use
 
 I had some AI assistance with this assignment. I didn't use any coding assistants like Claude Code, but I did prompt the Claude chatbot to help me figure out design ideas and certain issues that I had. The following are prompts that I gave to Claude to help me out.
