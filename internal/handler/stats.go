@@ -20,6 +20,8 @@ func NewStatsHandler(service *service.DeviceStorageService) *StatsHandler {
 func (statsHandler *StatsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	deviceID := r.PathValue("device_id")
 
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+
 	var req model.UploadStatsRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		slog.Error("Failed to decode body", "path", r.URL.Path, "error", err)
@@ -73,5 +75,7 @@ func (statsHandler *StatsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(stats)
+	if err := json.NewEncoder(w).Encode(stats); err != nil {
+		slog.Error("Failed to encode stats response", "path", r.URL.Path, "device_id", deviceID, "error", err)
+	}
 }

@@ -21,6 +21,8 @@ func (heartbeatHandler *HeartbeatHandler) Post(w http.ResponseWriter, r *http.Re
 	// Get the wild card device_id from path
 	deviceID := r.PathValue("device_id")
 
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+
 	var req model.HeartbeatRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		slog.Error("Failed to decode body", "path", r.URL.Path, "error", err)
