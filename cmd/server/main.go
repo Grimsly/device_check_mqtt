@@ -46,22 +46,29 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Run a goroutine to start the server
+	// Channel to receive server errors without calling os.Exit inside a goroutine
+	serverErr := make(chan error, 1)
+
 	go func() {
 		slog.Info("Device check MQTT server starting", "port", cfg.Port)
 		// Run the server and check for any errors
 		// If the error returned is ErrServerClosed, then it means that the user manually shut it down
 		// therefore, don't output an error
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("Server failed", "error", err)
-			os.Exit(1)
+			serverErr <- err
 		}
 	}()
 
-	// Make a channel that waits for a terminate signal
+	// Wait for a terminate signal or a server error
 	terminate := make(chan os.Signal, 1)
 	signal.Notify(terminate, syscall.SIGINT, syscall.SIGTERM)
-	<-terminate
+
+	select {
+	case err := <-serverErr:
+		slog.Error("Server failed", "error", err)
+		os.Exit(1)
+	case <-terminate:
+	}
 
 	slog.Info("Shutting down server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
