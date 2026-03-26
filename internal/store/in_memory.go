@@ -11,13 +11,11 @@ import (
 
 // Device in the fleet. Only used in in-memory store.
 type Device struct {
-	ID              string
-	FirstHeartbeat  *time.Time
-	LastHeartbeat   *time.Time
-	HeartbeatCount  int
-	UploadTimes     []model.UploadTimeStat
-	UploadTimeSum   int
-	UploadTimeCount int
+	ID             string
+	FirstHeartbeat *time.Time
+	LastHeartbeat  *time.Time
+	HeartbeatCount int
+	UploadTimes    []model.UploadTimeStat
 }
 
 // In-memory store contains the mutex to lock read and write if needed and a map of stored devices
