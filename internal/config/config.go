@@ -27,8 +27,13 @@ func Load() (*Config, error) {
 	// Checks to make sure the user entered a valid port number
 	if cfg.Port == "" {
 		return nil, fmt.Errorf("Port is required")
-	} else if _, err := strconv.Atoi(cfg.Port); err != nil {
+	}
+	port, err := strconv.Atoi(cfg.Port)
+	if err != nil {
 		return nil, fmt.Errorf("Port entered is not a number")
+	}
+	if port < 1 || port > 65535 {
+		return nil, fmt.Errorf("Port must be between 1 and 65535")
 	}
 
 	// Check if the filepath provided for the devices file is valid
