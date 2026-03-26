@@ -15,7 +15,7 @@ var (
 )
 
 // Interface that allows access to device storage operations
-// Ensure that all methods properly handles concunrency properly by implementing locks if necessary
+// Ensure that all methods properly handle concurrency by implementing locks if necessary
 type DeviceStorageStore interface {
 	// Registers a new device
 	AddDevice(id string) error

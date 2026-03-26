@@ -25,20 +25,20 @@ func NewDeviceService(s store.DeviceStorageStore) *DeviceStorageService {
 // Save a heartbeat to the device store
 func (service *DeviceStorageService) SaveHeartbeat(deviceID string, sentAt time.Time) error {
 	if sentAt.IsZero() {
-		return errors.New("sent_at cannot not be zero")
+		return errors.New("sent_at must not be zero")
 	}
 	return service.store.SaveHeartbeat(deviceID, sentAt)
 }
 
 // Save uploaded time to the device store
 func (service *DeviceStorageService) SaveUploadTime(deviceID string, sentAt time.Time, uploadTime int) error {
-	// Used to check and reject sent_at if 0, but I got the device simulator sends 0s
-	// if sentAt.IsZero() {
-	// 	return errors.New("sent_at cannot not be zero")
-	// }
+	// Normalize zero timestamps to current time (device simulator may send zero values)
+	if sentAt.IsZero() {
+		sentAt = time.Now().UTC()
+	}
 
 	if uploadTime < 0 {
-		return errors.New("upload_time cannot not be negative")
+		return errors.New("upload_time must not be negative")
 	}
 
 	return service.store.SaveUploadTime(deviceID, sentAt, uploadTime)
@@ -61,9 +61,8 @@ func (service *DeviceStorageService) GetDeviceStats(deviceID string) (model.GetD
 	// Either I do simple logging like I have here,
 	// or I create a Logging service that DeviceStorageService takes in so that I can send the error logs to the cloud or written in a log file
 	uptime, err := service.calculateUptime(heartbeatStat)
-
 	if err != nil {
-		slog.Error("Heartbeat handling failure", "error", err)
+		slog.Error("Heartbeat handling failure", "device_id", deviceID, "error", err)
 	}
 
 	avgUpload := service.calculateAvgUploadTime(uploadTimeStats)
